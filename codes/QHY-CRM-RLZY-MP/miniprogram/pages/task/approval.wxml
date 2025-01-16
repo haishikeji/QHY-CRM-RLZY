@@ -1,0 +1,39 @@
+<view class="container">
+    <view class="row row-part" style="padding: 0;" wx:if="{{tabs.length>0}}">
+      <van-sticky>
+        <van-tabs active="{{active}}" swipeable title-inactive-color="#454A58" title-active-color="#212121" color="#536DFE" line-width="200rpx" bind:change="onChange">
+            <van-tab wx:for="{{tabs}}" wx:key="index" title="{{item}}" name="{{item}}"></van-tab>
+        </van-tabs>
+        </van-sticky>
+    </view>
+    <view wx:if="{{total > 0}}">
+        <view class="list-num">共有<text class="col">{{total}}</text>条数据</view>
+        <view style="padding:0 20rpx;">
+            <view class="row">
+                <view class="card" wx:for="{{list}}" wx:key="index">
+                    <view class="ptitle margin-bottom20">申请延期</view>
+                    <view class="card-customer-info margin-bottom20">
+                        <view class="text">申请人：{{item.sponsorUser.userName}}</view>
+                        <view class="text">客户名称：{{item.customer.name}}</view>
+                        <!-- <view class="text">延期次数：{{item.defer}}</view> -->
+                        <view class="text">延期时间：{{item.defer}}个月</view>
+                        <view class="text">延期理由：{{item.content}}</view>
+                        <view class="text" wx:if="{{item.status === '1'}}">审批结果：<text class="col">已同意</text></view>
+                        <view class="text" wx:if="{{item.status === '2'}}">审批结果：<text class="col-red">不同意</text></view>
+                        <view class="text" wx:if="{{item.status !== '3'}}">审批人：{{item.accepterUser.userName}}</view>
+                        <view class="text" wx:if="{{item.status !== '3'}}">审批意见：{{item.remark}}</view>
+                    </view>
+                    <view class="row flex-between" wx:if="{{(item.accepterId === userId) && active === '未审批'}}">
+                        <van-button type="error" plain custom-class="button-plain-error" data-id="{{item.id}}" data-status="2" bindtap="toApproval">不同意</van-button>
+                        <van-button type="primary" custom-class="button-primary margin-left" data-id="{{item.id}}" data-status="1"  bindtap="toApproval">同意延期</van-button>
+                    </view>
+                </view>
+            </view>
+
+        </view>
+    </view>
+    <view wx:else="{{total < 1}}">
+        <van-image  width="240rpx" height="276rpx" src="/images/img/uninfo.png" class="uninfo-img" />
+    </view>
+    <model  wx:if="{{showModal}}" bind:modelConfirm="modelConfirm" bind:modelCancel="modelCancel" placeholder="{{placeholder}}" confirmText="{{confirmText}}" confirmColor="{{confirmColor}}"></model>
+</view>

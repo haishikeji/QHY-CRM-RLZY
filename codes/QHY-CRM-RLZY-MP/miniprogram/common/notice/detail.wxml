@@ -1,0 +1,13 @@
+<view class="container">
+    <view class="row">
+        <view class="card" bindtap="goCustomer">
+            <view class="ptitle margin-bottom20">{{info.msgTitle}}</view>
+            <view class="card-customer-info margin-bottom20">
+                <view class="text"><rich-text nodes="{{info.msgContent}}"></rich-text></view>
+            </view>
+            <!-- <view class="only-primary-btn" wx:if="{{status === '4'}}" bindtap="getOrder">接单</view>
+            <view class="only-primary-grey-btn" wx:if="{{(status === '2' || status === '5' || status === '7' || status === '8' || status === '9') && info.type === '1'}}" >已被其他同事接单</view>
+            <view class="only-primary-btn" wx:if="{{status === '6'}}" bindtap="goPostOne">申请延期</view> -->
+        </view>
+    </view>
+</view>

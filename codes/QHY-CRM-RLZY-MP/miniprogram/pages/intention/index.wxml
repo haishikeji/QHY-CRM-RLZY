@@ -1,0 +1,163 @@
+<view class="container">
+    <view class="row flex-around margin-bottom10">
+        <view wx:for="{{tabs}}" wx:key="index" class="flex-between-item" data-item="{{item}}" bindtap="goCustomerList">
+            <van-image src="{{item.src}}" width="80rpx" height="80rpx"></van-image>
+            <view class="tab-title">{{item.name}}</view>
+        </view>
+    </view>
+    <view class="list-num">我的客户</view>
+    <view style="padding:0 20rpx;" wx:if="{{total > 0}}">
+        <view class="row">
+            <view class="card" wx:for="{{list}}" wx:key="index">
+                <view class="ptitle margin-bottom20" data-id="{{item.id}}" bindtap="goDetail">{{item.name}}</view>
+                <view class="card-customer-info margin-bottom20" data-id="{{item.id}}" bindtap="goDetail">
+                    <view class="text">客户类型：{{item.typeName}}</view>
+                    <view class="text">客户规模：{{item.firmSizeName}}</view>
+                    <view class="text" wx:if="{{item.status !== '0'}}">负责人：{{item.mainSalerUser.userName}}<text wx:if="{{item.assistSalerUser}}" style="display: inline-block;width: auto;">,{{item.assistSalerUser.userName}}</text></view>
+                    <!-- <view class="text" wx:if="{{item.status === '5'}}">共有同事：{{item.assistSalerUser.userName}}</view> -->
+                </view>
+                <view class="row flex-between">
+                    <view wx:if="{{item.status === '5' || item.status === '6'}}">
+                        <view class="tabname col-red" wx:if="{{item.status === '6'}}">还有{{item.expireTime}}天到期</view>
+                        <view class="tabname col-warning" wx:else="{{item.status === '1' || item.status === '5'}}">还有{{item.expireTime}}天到期</view>
+                    </view>
+                    <view wx:if="{{item.status === '0'}}" class="tabname col">公海客户</view>
+                    <view wx:if="{{item.status === '4'}}" class="tabname col">{{item.mainSalerUser.userName}}求助</view>
+                    <view wx:if="{{item.status === '6'}}">
+                        <van-button type="primary" plain custom-class="button-plain-primary" data-obj="{{item}}" bindtap="helpCustomer">求助</van-button>
+                        <van-button type="primary" plain custom-class="button-plain-primary margin-left" data-item="{{item}}" bindtap="goPostOne">申请延期</van-button>
+                    </view>
+                    <view wx:if="{{item.status === '0'}}">
+                        <van-button type="primary" plain custom-class="button-plain-primary" data-id="{{item.id}}" bindtap="claimCustomer">认领客户</van-button>
+                    </view>
+                    <view wx:if="{{item.status === '4'}}">
+                        <van-button type="primary" plain custom-class="button-plain-primary" data-item="{{item}}" bindtap="getOrder">接单</van-button>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+    <view wx:else="{{total < 1}}">
+        <van-image width="240rpx" height="276rpx" src="/images/img/uninfo.png" class="uninfo-img" />
+    </view>
+    <!-- <view class="card margin-bottom10 ">
+        <view class="row flex-between  margin-bottom20  border-bottom">
+            <view class="flex-between">
+                <view class="title active">普通任务</view>
+                <view class="title">跟进任务</view>
+            </view>
+            <view>
+                <text>部门</text>
+                <van-icon name="arrow-down" />
+            </view>
+        </view>
+        <view class="border-bottom">
+            <van-radio-group value="{{ radio }}" bind:change="onChange">
+                <van-radio name="1" custom-class="radio-icon-top">
+                    <view class="view-radio">
+                        <view class="radio-title margin-bottom10">这是一个普通任务名称</view>
+                        <view class="margin-bottom10">
+                            <van-icon name="underway-o" color="#BDBDBD" size="28rpx" />
+                            <text>09:00</text>
+                        </view>
+                        <view class="flex-start">
+                            <view class="customer-icon">
+                                <van-icon name="/images/img/icon_building.png" color="#BDBDBD" size="28rpx" custom-class="icon-icon" />
+                            </view>
+                            <view><text>济南中航远洋船舶有限公司</text></view>
+                        </view>
+                    </view>
+                </van-radio>
+                <van-radio name="2" custom-class="radio-icon-top">
+                    <view class="view-radio">
+                        <view class="radio-title margin-bottom10">这是一个普通任务名称</view>
+                        <view class="margin-bottom10">
+                            <van-icon name="underway-o" color="#BDBDBD" size="28rpx" />
+                            <text>09:00</text>
+                        </view>
+                        <view class="flex-start">
+                            <view class="customer-icon">
+                                <van-icon name="/images/img/icon_building.png" color="#BDBDBD" size="28rpx" custom-class="icon-icon" />
+                            </view>
+                            <view><text>济南中航远洋船舶有限公司</text></view>
+                        </view>
+                    </view>
+                </van-radio>
+            </van-radio-group>
+        </view>
+        <view class="add-record">
+            <van-icon name="plus" color="#536DFE" size="28rpx" />
+            <text class="col">添加一个新的任务</text>
+        </view>
+    </view>
+    <view class="card margin-bottom10">
+        <view class="row flex-between  margin-bottom20  border-bottom">
+            <view class="title active">本周意向客户跟进</view>
+            <view>
+                <text>部门</text>
+                <van-icon name="arrow-down" />
+            </view>
+        </view>
+        <view>
+            <view class="icon-info">
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_building2.png" color="#536DFE" size="28rpx" custom-class="icon-icon" />
+                    </view>
+                    <view><text class="title">山东日发纺织机械有限公司聊城高新区分</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_calendar.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>2022-07-26</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_phone.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>继续合作工伤外包（劳务派遣）增加了人数。继续合作工伤外包（劳务派遣）增加了人数。</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_contacts.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>张三丰</text></view>
+                </view>
+            </view>
+            <view class="icon-info">
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_building2.png" color="#536DFE" size="28rpx" custom-class="icon-icon" />
+                    </view>
+                    <view><text class="title">山东日发纺织机械有限公司聊城高新区分</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_calendar.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>2022-07-26</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_phone.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>继续合作工伤外包（劳务派遣）增加了人数。继续合作工伤外包（劳务派遣）增加了人数。</text></view>
+                </view>
+                <view class="flex-start">
+                    <view class="customer-icon">
+                        <van-icon name="/images/img/icon_contacts.png" color="#536DFE" size="28rpx" custom-style="icon-icon" />
+                    </view>
+                    <view><text>张三丰</text></view>
+                </view>
+            </view>
+        </view>
+        <view class="add-record">
+            <van-icon name="plus" color="#536DFE" size="28rpx" />
+            <text class="col">添加一个新的任务</text>
+        </view>
+    </view> -->
+    <view class="pos-add" bindtap="goCustomer">
+        <van-icon name="/images/img/icon_adduser.png" size="100rpx" />
+    </view>
+</view>

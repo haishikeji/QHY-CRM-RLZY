@@ -1,0 +1,236 @@
+<view class="container">
+    <view class="customer-info">
+        <view class="font20 col-1A margin-bottom20">{{info.name}}</view>
+        <view class="row flex-between border-bottom">
+            <view class="font12 col-61 margin-bottom20">{{info.typeName}}</view>
+            <view class="flex-start">
+                <!-- 领导有指派权限 -->
+                <view class="font14 col"  style="margin-right: 30rpx;"  wx:if="{{postId !== 7}}" bindtap="showAssign">
+                    <van-icon name="/images/img/icon-assign.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />指派
+                </view>
+                <!-- 激活状态 7-->
+                <view class="font14 col"   wx:if="{{info.status === '7'}}" data-id="{{info.id}}" bindtap="activate">
+                    <van-icon name="/images/img/icon-flag.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />激活
+                </view>
+                <!-- 求助--接单状态 -->
+                <view class="font14 col"  wx:if="{{info.status === '4'}}" bindtap="getOrder">
+                    <!-- TODO 线上图片未找到https://shuahuo-oss.oss-cn-beijing.aliyuncs.com/crmmini/icon-orders.png -->
+                    <van-icon name="/images/img/icon-orders.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />接单
+                </view>
+                <!-- 签约状态 1.5.6.9-->
+                <view class="font14 col" wx:if="{{showSign}}" bindtap="signCustomer">
+                    <van-icon name="/images/img/icon-contract.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />签约
+                </view>
+                <!-- 已签约状态 2.8-->
+                <view class="font14 col"  wx:if="{{(info.status === '2') && (info.isMy===true)}}" bindtap="cancelSignCustomer">
+                    <van-icon name="/images/img/icon-contract.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />取消签约
+                </view>
+                <view class="font14 col-green"  wx:if="{{((info.status === '2') && (info.isMy===false)) || info.status === '8'}}">
+                    <van-icon name="/images/img/icon-contract-green.png" size="28rpx" style="vertical-align: -10%;margin-right: 10rpx;" />已签约
+                </view>
+            </view>
+        </view>
+    </view>
+    <van-tabs active="{{ active }}" title-active-color="#1A1A1A" title-inactive-color="#B8B8B8" line-width="0" animated="true" tab-class="customer-info-tab" bind:change="onChange">
+        <van-tab title="跟进记录">
+            <view class="tab-content">
+                <view class="tab-content-item row flex-between" wx:for="{{list}}" wx:key="index">
+                    <view class="col-BD font12 tab-content-left">
+                        <view class="col-1A font14 margin-bottom5">{{item.createTimeMonth}}</view>{{item.createTimeYear}}
+                    </view>
+                    <view class="tab-content-right">
+                        <view class="flex-between  tab-content-row">
+                            <view class="name" style="width: 150rpx;">
+                                <!-- <van-icon name="phone" color="#1DE9B6" size="32rpx" />
+                                <text class="col-1A font15">电话</text> -->
+                                <van-icon name="/images/img/friends_fill.png" size="32rpx" style="vertical-align: -10%;" />
+                                <text class="col-1A font15 ">{{item.traceTypeName}}</text>
+                            </view>
+                            <view class="col-BD font14">{{item.sysUser.userName}}</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">拜访内容:</view>
+                            <view class="justify">{{item.traceContent}}</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">业务类型:</view>
+                            <view class="justify">{{item.business.name}}</view>
+                        </view>
+                        <view class="flex-between tab-content-row" wx:if="{{item.remark}}">
+                            <view class="name">备注:</view>
+                            <view class="justify">{{item.remark}}</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name col" style="width: 150rpx;" data-url="{{item.tracePic}}" bindtap="previewSqs">查看图片</view>
+                        </view>
+                    </view>
+                </view>
+                <!-- <view class="tab-content-item row flex-between">
+                    <view class="col-BD font12 tab-content-left">
+                        <view class="col-1A font14 margin-bottom5">07-20</view>2022
+                    </view>
+                    <view class="tab-content-right">
+                        <view class="flex-between tab-content-row">
+                            <view class="name">
+                                <van-icon name="/images/img/friends_fill.png" size="32rpx" style="vertical-align: -10%;" />
+                                <text class="col-1A font15 ">拜访</text>
+                            </view>
+                            <view class="col-BD font14">章三峰</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">拜访内容：</view>
+                            <view class="justify">继续合作工伤外包（劳务派遣）增加了人数。</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">备注：</view>
+                            <view class="justify">客户提出降低价格，需要向领导申请。</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">随同人员：</view>
+                            <view class="justify">张三丰、章伞风、张三丰、章伞风</view>
+                        </view>
+                    </view>
+                </view>
+                <view class="tab-content-item row flex-between">
+                    <view class="col-BD font12 tab-content-left">
+                        <view class="col-1A font14 margin-bottom5">07-20</view>2022
+                    </view>
+                    <view class="tab-content-right">
+                        <view class="flex-between  tab-content-row">
+                            <view class="name">
+                                <van-icon name="/images/img/email_fill.png" size="32rpx" style="vertical-align: -10%;" />
+                                <text class="col-1A font15">电话</text>
+                            </view>
+                            <view class="col-BD font14">章三峰</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">通话内容：</view>
+                            <view class="justify">继续合作工伤外包（劳务派遣）增加了人数。</view>
+                        </view>
+                    </view>
+                </view> -->
+            </view>
+        </van-tab>
+        <van-tab title="合作项目" wx:if="{{info.status === '8'}}">
+            <view class="tab-content2 margin-bottom10" wx:for="{{contractList}}" wx:key="index">
+                <view class="flex-between  tab-content-row">
+                    <view class="name2">
+                        <van-icon name="/images/img/icon_project.png" size="32rpx" style="vertical-align: -10%;" />
+                        <text class="col-1A font15 text">{{item.business.name}}</text>
+                    </view>
+                    <view class="col-BD font12">{{item.signTimeStr}} 至 {{item.endTimeStr}}</view>
+                </view>
+                <view class="flex-between  tab-content-row" wx:for="{{item.pdfFileList}}" wx:for-index="fileIndex" wx:for-item="file">
+                    <view class="name2" data-url="{{file.url}}" bindtap="previewPDF">
+                        <view class="pretext-icon">
+                            <van-icon name="/images/img/icon_file.png" size="28rpx" />
+                        </view>
+                        <text class="col-1A font15 text text-over">{{file.name}}</text>
+                    </view>
+                    <!-- <view class="col-BD font12">{{item.signTimeStr}}</view> -->
+                </view>
+                <view class="picture-box">
+                    <van-image width="200rpx" height="296rpx" wx:for="{{item.imgFileList}}" wx:for-index="imgIndex" wx:for-item="img" src="{{img.url}}" class="contract-img" data-url="{{img.url}}" bindtap="previewSqs" />
+                </view>
+            </view>
+            <!-- <view class="tab-content2">
+                <view class="flex-between  tab-content-row border-bottom">
+                    <view class="name2">
+                        <van-icon name="/images/img/icon_project.png" size="32rpx" style="vertical-align: -10%;" />
+                        <text class="col-1A font15 text">代发工资</text>
+                    </view>
+                    <view class="col-BD font12">2022-03-20</view>
+                </view>
+                <view class="picture-box flex-around">
+                    <van-image width="200rpx" height="296rpx" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                    <van-image width="200rpx" height="296rpx" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                    <van-image width="200rpx" height="296rpx" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                </view>
+                <view class="pic-more">更多图片
+                    <van-icon name="arrow" />
+                </view>
+            </view> -->
+        </van-tab>
+        <van-tab title="企业信息">
+            <view class="tab-content3">
+                <view class="flex-start">
+                    <view class="name">联系电话</view>
+                    <view class="text">{{info.phone}}</view>
+                </view>
+                <view class="flex-start">
+                    <view class="name">客户类型</view>
+                    <view class="text">{{info.typeName}}</view>
+                </view>
+                <view class="flex-start" wx:if="{{info.type === '3'}}">
+                    <view class="name">集团客户</view>
+                    <view class="text">{{info.pcustomer.name}}</view>
+                </view>
+                <view class="flex-start">
+                    <view class="name">所属区域</view>
+                    <view class="text">{{info.area}}</view>
+                </view>
+                <view class="flex-start">
+                    <view class="name">详细地址</view>
+                    <view class="text">{{info.address}}</view>
+                </view>
+                <view class="flex-between" data-id="{{info.id}}" bindtap="goCustomer" wx:if="{{info.status !=='0' && info.status !=='4' && info.status !=='9'}}">
+                    <view class="col font15">编辑信息</view>
+                    <view><van-icon name="arrow" color="#536DFE" size="24rpx" /></view>
+                </view>
+            </view>
+        </van-tab>
+        <van-tab title="流转记录">
+            <view class="tab-content">
+                <view class="tab-content-item row flex-between" wx:for="{{list}}" wx:key="index">
+                    <view class="col-BD font12 tab-content-left">
+                        <view class="col-1A font14 margin-bottom5">{{item.createTimeMonth}}</view>{{item.createTimeYear}}
+                    </view>
+                    <view class="tab-content-right">
+                        <view class="flex-between tab-content-row">
+                            <view class="name">操作人:</view>
+                            <view class="justify">{{item.createBy}}</view>
+                        </view>
+                        <view class="flex-between tab-content-row">
+                            <view class="name">内容:</view>
+                            <view class="justify">{{item.content}}</view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </van-tab>
+    </van-tabs>
+    <view class="pos-add" bindtap="goAddTrack" wx:if="{{active === 0}}">
+        <van-icon name="/images/img/track.png" size="100rpx"  />
+    </view>
+    <view class="pos-add" bindtap="goAddTask" wx:if="{{(info.status === '1' || info.status === '5' || info.status === '6')  && active === 2 }}">
+        <van-icon name="/images/img/task.png" size="100rpx"  />
+    </view>
+    <!-- 选择指派人 -->
+    <van-popup show="{{ showAssignStatusPopup }}" round custom-style="height: 400rpx;overflow: hidden;"  >
+    <view class="assignstatus">
+        <view class="assignstatus-title">请选择</view>
+       <view class="assignstatus-box">
+            <label>客户状态：</label>
+            <view>
+                <text  wx:for="{{statusList}}" wx:key="index" class="{{status === item.value?'active':''}}" data-value="{{item.value}}" bindtap="changeStatus">{{item.text}}</text>
+            </view>
+       </view>
+       <view class="assignstatus-footer">
+        <view class="assignstatus-cancel" bindtap="assignStatusCancel">取消</view>
+        <view class="assignstatus-confirm" bindtap="assignStatusConfirm">确定</view>
+       </view>
+    </view>
+        
+    </van-popup>
+  <van-popup show="{{ showAssignPopup }}" round position="bottom" custom-style="height: 60%;overflow: hidden;"  >
+    <van-picker toolbar-class="picker-toolbar" active-class="picker-active" title="销售人员" item-height="56" show-toolbar columns="{{ listUserList }}" value-key="text" bind:cancel="closeAssignPopup" bind:confirm="confirmAssignPopup" />
+  </van-popup>
+  <view wx:if="{{showEacharts === true}}">
+    <view class="echarts-line" wx:if="{{info.status === '8'}}">
+        <view class="title-text">签约人数</view>
+        <view style="width:100%;height: 320rpx;"><ec-canvas id="mychart-dom-line" force-use-old-canvas="true" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas></view>
+    </view>
+  </view>
+  
+  
+</view>
